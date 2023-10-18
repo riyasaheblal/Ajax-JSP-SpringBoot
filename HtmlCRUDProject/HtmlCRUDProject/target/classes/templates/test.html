@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <title>Saved Data</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+
+<h3>Your input was received as:</h3>
+
+<div class="container">
+    <h2>Add Your Details </h2>
+    <form action="#" method="#">
+        <div class="form-group">
+            <label>Brand Name:</label>
+            <input type="text" class="form-control" id="brand" required>
+
+        </div>
+        <div class="form-group">
+            <label>Type:</label>
+            <input type="text" class="form-control" id="wear" required>
+        </div>
+        <div class="form-group">
+            <label>Cost:</label>
+            <input type="number" class="form-control" id="cost" required>
+        </div>
+        <input type="button" class="btn btn-primary" onclick="Refresh()">save</input>
+    </form>
+</div>
+<div class="container">
+    <h4> Cloth Details : </h4>
+    <p></p>
+    <div class="table-responsive">
+        <table class="table" id="dummyTextId2" >
+            <thead>
+            <tr>
+                <th>Brand Name</th>
+                <th>Type</th>
+                <th>Cost</th>
+                <th>Operations</th>
+            </tr>
+            </thead>
+            <tbody >
+            <tr th:each="cloth :${list}" >
+                <td th:text="${cloth.brand}"></td>
+                <td th:text="${cloth.wear}"></td>
+                <td th:text="${cloth.cost}"></td>
+                <td><a th:href="@{/update/{id}(id=${cloth.id})}">Update</a></td>
+                <td><a th:href="@{/delete/{id}(id=${cloth.id})}">Delete</a></td>
+            </tr>
+            <!-- <button onclick="refreshData()">Refresh Data</button>-->
+
+            </tbody>
+        </table>
+<!--        <h5><a th:href="@{/get}"> << Previous </a></h5>-->
+<!--        <h5><a th:href="@{/submittedsuccessfully}"> Next >> </a></h5>-->
+
+    </div>
+</div>
+</body>
+<script>
+    function Refresh() {
+    var a = document.getElementById("brand").value;
+    var b = document.getElementById("wear").value;
+    var c = document.getElementById("cost").value;
+
+    var myObject = {
+    "brand" : a,
+    "wear" : b,
+    "cost" : c
+    };
+
+    $.ajax({
+    url: '/saveData',
+    type: 'post',
+    contentType: 'application/json; charset=utf-8',
+    data: JSON.stringify(myObject),
+    success: function(data) {
+    console.log(data);
+    var tableBody = $("#dummyTextId2");
+    tableBody.empty(); // Clear existing data
+
+    // Iterate through the received data and generate table rows
+    data.forEach(function(data) {
+    var row = $("<tr>");
+    row.append($("<td>").text(data.brand));
+    row.append($("<td>").text(data.wear));
+    row.append($("<td>").text(data.cost));
+    tableBody.append(row);
+    });
+    },
+    error: function(request, error) {
+    console.error("Error:", error);
+    }
+    });
+   }
+
+</script>
+</html>
